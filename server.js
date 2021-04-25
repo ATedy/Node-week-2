@@ -46,6 +46,7 @@ app.post("/albums", function (req, res) {
 });
 
 // deleting an element
+// solution-1
 app.delete("/albums/:albumId", (req, res) => {
   let id = req.params.albumId;
   let deletedAlbumIndex = albumsData.findIndex((album) => album.albumId === id);
@@ -55,17 +56,44 @@ app.delete("/albums/:albumId", (req, res) => {
     res.send("Album Successfully deleted");
     res.end();
   }
+  // Solution 2
+  // filtering same array based on not having the id
+  albumsData = albumsData.filter((album) => album.albumId !== req.params.id);
+
+  res.status(204); // No data
+  res.end(); // Response body is empty
 });
 
 // updating/put
 app.put("/albums/:albumId", (req, res) => {
-  let newUpdatedAlbum = req.body;
-  let updatedAlbumIndex = albumsData.findIndex(
+  // let newUpdatedAlbum = req.body;
+  // the album to be updated
+  let albumIndex = albumsData.findIndex(
     (album) => album.albumId === req.params.albumId
   );
 
-  albumsData[updatedAlbumIndex] = newUpdatedAlbum;
-  res.send(newUpdatedAlbum);
+  // if the album is the array
+  if (albumIndex >= 0) {
+    // origAlbum contain the data of the album in the array
+    // updatedAlbum.albumId contains the data of the body from the put request
+    const origAlbum = albumsData[albumIndex];
+    const updatedAlbum = req.body;
+
+    // Data validation
+    if (updatedAlbum.albumId && origAlbum.albumId !== updatedAlbum.albumId) {
+      res.status(400); // Bad request
+      res.send({message: "album IDs don't match"});
+    } else {
+      // It will updated the existing album album with new vales and the rest values unchanged using spread operator
+      albumsData[albumIndex] = {...origAlbum, ...updatedAlbum};
+      res.send(albumsData[albumIndex]);
+    }
+  } else {
+    res.status(404); // Not found
+    res.send({message: "no such album"});
+  }
+  // albumsData[updatedAlbumIndex] = newUpdatedAlbum;
+  // res.send(newUpdatedAlbum);
 });
 
 app.listen(3000, () => console.log(`listening on 3000`));
