@@ -1,5 +1,5 @@
 const express = require("express");
-const albumsData = require("./Data");
+let albumsData = require("./Data");
 
 const app = express();
 
@@ -51,17 +51,16 @@ app.delete("/albums/:albumId", (req, res) => {
   let id = req.params.albumId;
   let deletedAlbumIndex = albumsData.findIndex((album) => album.albumId === id);
   if (deletedAlbumIndex > -1) {
-    albumsData.slice(deletedAlbumIndex, 1);
+    albumsData.splice(deletedAlbumIndex, 1);
     res.status(204);
     res.send("Album Successfully deleted");
-    res.end();
   }
   // Solution 2
-  // filtering same array based on not having the id
-  albumsData = albumsData.filter((album) => album.albumId !== req.params.id);
+  // // filtering same array based on not having the id
+  // albumsData = albumsData.filter((album) => album.albumId !== req.params.id);
 
-  res.status(204); // No data
-  res.end(); // Response body is empty
+  // res.status(204); // No data
+  // res.end(); // Response body is empty
 });
 
 // updating/put
@@ -96,4 +95,4 @@ app.put("/albums/:albumId", (req, res) => {
   // res.send(newUpdatedAlbum);
 });
 
-app.listen(3000, () => console.log(`listening on 3000`));
+app.listen(3001, () => console.log(`listening on 3001`));
